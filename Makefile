@@ -1,12 +1,12 @@
 default:
-	python3 main.py animal100.txt
+	python3  src/main.py files/animal100.txt
 
 full:
-	python3 main.py animal.txt
+	python3  src/main.py files/animal.txt
 
 bell:
-	python3 main.py bellsaudio.txt
+	python3  src/main.py files/bellsaudio.txt
 
 1000:
-	python3 main.py animal1000.txt
+	python3  src/main.py files/animal1000.txt
 
