@@ -4,5 +4,9 @@ default:
 full:
 	python3 main.py animal.txt
 
-list:
-	python3 main.py list.txt
+bell:
+	python3 main.py bellsaudio.txt
+
+1000:
+	python3 main.py animal1000.txt
+
