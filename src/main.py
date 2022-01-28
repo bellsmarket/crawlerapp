@@ -10,7 +10,7 @@ import debug as d
 # define Variable
 args = sys.argv
 time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
-interval = 1 
+interval = 0.1 
 
 
 ## Check Input Arugement
@@ -86,7 +86,7 @@ def write_csv(datas, url):
     DIR_CSV = './csv/'
 
     # remove Query from URL
-    domain_name = re.sub('(?=\/)(.*)', '', url)
+    domain_name = re.sub('(?=[\/|?])(.*)', '', url)
 
     header = ['CompanyName', 'No', 'Keyword', 'Existence']
     second_row = [domain_name, '-', '-', '-']
@@ -101,14 +101,41 @@ def write_csv(datas, url):
             writer.writerow(data)
 
 
+# for debug.
+def debug_csv(url):
+    datas = []
+
+    for i in range(0, 40000):
+        # print(str(i) + 'cat' + '○')
+        if i % 3 == 0:
+            keyword = 'cat'
+        elif i % 3 == 1:
+            keyword = 'dog'
+        else:
+            keyword = 'bird'
+ 
+        datas.append(['-', i, keyword, '○'])
+    print(len(datas))
+    write_csv(datas, url)
+
+
 def main():
     print("Call def main().")
     check_argc()
     url = sys.argv[1]
     keywords_file = sys.argv[2] 
+
     
-    datas = check_to_exist(url, keywords_file)
-    write_csv(datas, url)
+    # 環境切り替え
+    # 0 => デバッグ用リスト
+    # 1 => 本番環境
+    env_flags = 0 
+    if env_flags == 0:
+        debug_csv(url)
+    else:
+        datas = check_to_exist(url, keywords_file)
+        write_csv(datas, url)
+
     return 0
 
 
