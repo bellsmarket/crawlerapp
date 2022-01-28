@@ -10,7 +10,7 @@ import debug as d
 # define Variable
 args = sys.argv
 time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
-interval = 0.1 
+interval = 0.5
 
 
 ## Check Input Arugement
@@ -129,7 +129,7 @@ def main():
     # 環境切り替え
     # 0 => デバッグ用リスト
     # 1 => 本番環境
-    env_flags = 0 
+    env_flags = 1 
     if env_flags == 0:
         debug_csv(url)
     else:
