@@ -10,4 +10,10 @@ def color():
     print(Style.RESET_ALL)
     print("normal")
 
+def coloring(code, num):
+    if code == 200:
+        print(Fore.GREEN + str(code) + Style.RESET_ALL + ' => ' + str(num)+ 'ページ')
+    else:
+        print(Fore.RED + str(code) + Style.RESET_ALL + ' => ' + str(num)+ 'ページ')
+
 

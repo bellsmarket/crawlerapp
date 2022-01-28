@@ -1,69 +1,114 @@
 import csv
-import debug as d
 import requests
 import sys
 from colorama import Fore, Back, Style
+import datetime
+import time
+import re
+import debug as d
 
 # define Variable
 args = sys.argv
-prefix = 'https://'
-url = 'bells-audio.com'
-
-dir_list = args[1] 
+time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
+interval = 1 
 
 
-def create_url(target_url, directory):
+## Check Input Arugement
+def check_argc():
+    if len(sys.argv) <= 1:
+        print('引数が足りません。')
+        print('python3 main.py <TargetURL> <KeywordFile>')
+        exit()
+
+    elif len(sys.argv) <= 2: 
+        print('URLもしくはファイル指定がありません')
+        print('python3 main.py <TargetURL> <KeywordFile>')
+        exit()
+    else:
+        return 0
+
+
+# Create URL from keywords.
+def create_url(target_url, keywords_file):
     print("Call def create_url()")
+
+    # Variable
     urls = []
+    prefix = 'https://'
 
-    with open(directory, 'r') as f:
+    with open(keywords_file, 'r') as f:
         for line in f.read().splitlines():
-            urls.append('{0}{1}/{2}'.format(prefix, target_url, line))
-            # url = '{0}{1}/{2}'.format(prefix, target_url, line)
-            # print(line) #200ms
-
-        # 処理速度計測
-        # for line in f:
-            # print(line)
-            # print(line.replace('\n','')) #250 -270ms
-            # print(line.rstrip('\n')) #259ms
-
+            urls.append(['{0}{1}/{2}'.format(prefix, target_url, line), line])
     return urls
 
-def check_to_exist(urls):
-    ok = 0
-    ng = 0
+
+# Check the existence.
+def check_to_exist(target_url, keywords_file):
     print("Call def check_to_exist()")
+
+    # Variable
+    datas = []
+    cnt_ok = 0
+    cnt_ng = 0
+    urls = create_url(target_url, keywords_file)
+    
     for i, url in enumerate(urls):
-        r = requests.get(url)
-        # print(str(i) + ':' + url + ':' + str(r))
+        r = requests.get(url[0])
         if r.status_code == 200:
             flag = Fore.GREEN + str(r.status_code) + Style.RESET_ALL
-            ok+=1
+            cnt_ok += 1
+            status = '○'
         else:
             flag = Fore.RED + str(r.status_code) + Style.RESET_ALL
-            ng+=1
-        print('{0: d}: {1} => {2}'.format(i, url, flag))
-        # process to request
+            cnt_ng += 1
+            status = '×'
 
-    coloring(200, ok)
-    coloring(404, ng)
+        print('{0: d}: {1} => {2}'.format(i, url[1], flag))
+
+        # Create Datas for WriteCSV.
+        datas.append(['-', i+1 , url[1], status])
+
+        # Request Interval
+        time.sleep(interval)
+
+    
+    d.coloring(200, cnt_ok)
+    d.coloring(404, cnt_ng)
+
+    return datas
 
 
-def coloring(code, num):
-    if code == 200:
-        print(Fore.GREEN + str(code) + Style.RESET_ALL + ' => ' + str(num)+ 'ページ')
-    else:
-        print(Fore.RED + str(code) + Style.RESET_ALL + ' => ' + str(num)+ 'ページ')
+# Write data to CSV file.
+def write_csv(datas, url):
+    print("Call def write_csv()")
 
+    # Variable
+    DIR_CSV = './csv/'
+
+    # remove Query from URL
+    domain_name = re.sub('(?=\/)(.*)', '', url)
+
+    header = ['CompanyName', 'No', 'Keyword', 'Existence']
+    second_row = [domain_name, '-', '-', '-']
+    f_name = DIR_CSV + domain_name + time_stamp + '.csv'
+
+    with open(f_name, 'a')as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        writer.writerow(second_row)
+
+        for data in datas:
+            writer.writerow(data)
 
 
 def main():
     print("Call def main().")
-    urls = create_url(url, dir_list)
-    check_to_exist(urls)
-    # d.color()
-
+    check_argc()
+    url = sys.argv[1]
+    keywords_file = sys.argv[2] 
+    
+    datas = check_to_exist(url, keywords_file)
+    write_csv(datas, url)
     return 0
 
 
