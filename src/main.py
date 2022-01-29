@@ -27,7 +27,6 @@ def check_argc():
     else:
         return 0
 
-
 # Create URL from keywords.
 def create_url(target_url, keywords_file):
     print("Call def create_url()")
