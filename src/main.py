@@ -100,22 +100,6 @@ def write_csv(datas, url):
             writer.writerow(data)
 
 
-# for debug.
-def debug_csv(url):
-    datas = []
-
-    for i in range(0, 40000):
-        # print(str(i) + 'cat' + '○')
-        if i % 3 == 0:
-            keyword = 'cat'
-        elif i % 3 == 1:
-            keyword = 'dog'
-        else:
-            keyword = 'bird'
- 
-        datas.append(['-', i, keyword, '○'])
-    print(len(datas))
-    write_csv(datas, url)
 
 
 def main():
@@ -130,8 +114,11 @@ def main():
     # 1 => 本番環境
     env_flags = 0 
     if env_flags == 0:
-        debug_csv(url)
+        print("デバッグ環境")
+        datas = d.debug_csv(url)
+        write_csv(datas, url)
     else:
+        print("本番環境")
         datas = check_to_exist(url, keywords_file)
         write_csv(datas, url)
 

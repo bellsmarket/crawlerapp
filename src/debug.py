@@ -17,3 +17,19 @@ def coloring(code, num):
         print(Fore.RED + str(code) + Style.RESET_ALL + ' => ' + str(num)+ 'ページ')
 
 
+# for debug.
+def debug_csv(url):
+    datas = []
+
+    for i in range(0, 40000):
+        # print(str(i) + 'cat' + '○')
+        if i % 3 == 0:
+            keyword = 'cat'
+        elif i % 3 == 1:
+            keyword = 'dog'
+        else:
+            keyword = 'bird'
+ 
+        datas.append(['-', i, keyword, '○'])
+    print(len(datas))
+    return datas
