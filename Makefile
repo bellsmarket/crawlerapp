@@ -1,5 +1,5 @@
 default:
-	python3	src/main.py files/animal100.txt
+	python3	src/main.py google.com/search? files/animal100.txt
 
 full:
 	python3	src/main.py files/animal.txt

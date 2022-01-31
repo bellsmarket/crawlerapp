@@ -2,6 +2,7 @@ from colorama import Fore, Back, Style
 
 def t(string):
     print(type(string))
+    print(string)
 
 def color():
     print(Fore.RED + "Red")
@@ -20,9 +21,9 @@ def coloring(code, num):
 # for debug.
 def debug_csv(url):
     datas = []
+    max_len = 40000
 
-    for i in range(0, 40000):
-        # print(str(i) + 'cat' + '○')
+    for i in range(0, max_len):
         if i % 3 == 0:
             keyword = 'cat'
         elif i % 3 == 1:
@@ -31,5 +32,4 @@ def debug_csv(url):
             keyword = 'bird'
  
         datas.append(['-', i, keyword, '○'])
-    print(len(datas))
     return datas

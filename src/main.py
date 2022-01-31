@@ -5,7 +5,7 @@ from colorama import Fore, Back, Style
 import datetime
 import time
 import re
-import debug as d
+from debug import debug_csv, coloring
 
 # define Variable
 args = sys.argv
@@ -71,8 +71,8 @@ def check_to_exist(target_url, keywords_file):
         time.sleep(interval)
 
     
-    d.coloring(200, cnt_ok)
-    d.coloring(404, cnt_ng)
+    coloring(200, cnt_ok)
+    coloring(404, cnt_ng)
 
     return datas
 
@@ -115,7 +115,7 @@ def main():
     env_flags = 0 
     if env_flags == 0:
         print("デバッグ環境")
-        datas = d.debug_csv(url)
+        datas = debug_csv(url)
         write_csv(datas, url)
     else:
         print("本番環境")
