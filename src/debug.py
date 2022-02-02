@@ -22,6 +22,7 @@ def coloring(code, num):
 def debug_csv(url):
     datas = []
     max_len = 40000
+    print('degug用のリストファイルを作成')
 
     for i in range(0, max_len):
         if i % 3 == 0:

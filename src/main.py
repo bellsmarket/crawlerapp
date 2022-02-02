@@ -1,3 +1,4 @@
+import os
 import csv
 import requests
 import sys
@@ -10,18 +11,18 @@ from debug import debug_csv, coloring
 # define Variable
 args = sys.argv
 time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
-interval = 0.1 
+interval = 3 
 
 
 ## Check Input Arugement
 def check_argc():
     if len(sys.argv) <= 1:
-        print('引数が足りません。')
+        print('引数が足りません。以下のように入力して下さい。')
         print('python3 main.py <TargetURL> <KeywordFile>')
         exit()
 
     elif len(sys.argv) <= 2: 
-        print('URLもしくはファイル指定がありません')
+        print('URLかファイル指定がありません')
         print('python3 main.py <TargetURL> <KeywordFile>')
         exit()
     else:
@@ -29,27 +30,29 @@ def check_argc():
 
 # Create URL from keywords.
 def create_url(target_url, keywords_file):
-    print("Call def create_url()")
 
     # Variable
     urls = []
     prefix = 'https://'
 
-    with open(keywords_file, 'r') as f:
-        for line in f.read().splitlines():
-            urls.append(['{0}{1}/{2}'.format(prefix, target_url, line), line])
+    try:
+        with open(keywords_file, 'r') as f:
+            for line in f.read().splitlines():
+                urls.append(['{0}{1}/{2}'.format(prefix, target_url, line), line])
+    except IsADirectoryError as e:
+        print('キーワードファイルにディレクトリが選択されています。')
+        print('正しいファイルパスを指定して下さい。')
+        print('python3 main.py <TargetURL> <KeywordFile>')
     return urls
 
 
 # Check the existence.
-def check_to_exist(target_url, keywords_file):
-    print("Call def check_to_exist()")
+def check_to_exist(target_url, urls):
 
     # Variable
     datas = []
     cnt_ok = 0
     cnt_ng = 0
-    urls = create_url(target_url, keywords_file)
     
     for i, url in enumerate(urls):
         r = requests.get(url[0])
@@ -78,18 +81,22 @@ def check_to_exist(target_url, keywords_file):
 
 
 # Write data to CSV file.
-def write_csv(datas, url):
-    print("Call def write_csv()")
+def write_csv(target_url, datas):
 
     # Variable
-    DIR_CSV = './csv/'
+    CSV_DIR = os.getcwd() +'/csv'
+
+    # Check the Export Directory.
+    if not os.path.isdir(CSV_DIR):
+        os.makedirs(CSV_DIR)
+        print('Create Directory => ' + CSV_DIR)
 
     # remove Query from URL
-    domain_name = re.sub('(?=[\/|?])(.*)', '', url)
+    domain_name = re.sub('(?=[\/|?])(.*)', '', target_url)
 
     header = ['CompanyName', 'No', 'Keyword', 'Existence']
     second_row = [domain_name, '-', '-', '-']
-    f_name = DIR_CSV + domain_name + time_stamp + '.csv'
+    f_name = CSV_DIR + '/' +domain_name + '_' + time_stamp + '.csv'
 
     with open(f_name, 'a')as f:
         writer = csv.writer(f)
@@ -99,28 +106,34 @@ def write_csv(datas, url):
         for data in datas:
             writer.writerow(data)
 
+    return 0 
 
+# WorkFlow functions.
+def work_flow(target_url, keywords_file):
 
-
-def main():
-    print("Call def main().")
-    check_argc()
-    url = sys.argv[1]
-    keywords_file = sys.argv[2] 
-
-    
     # 環境切り替え
-    # 0 => デバッグ用リスト
+    # 0 => デバッグ
     # 1 => 本番環境
     env_flags = 0 
     if env_flags == 0:
         print("デバッグ環境")
-        datas = debug_csv(url)
-        write_csv(datas, url)
+        datas = debug_csv(target_url)
+        write_csv(target_url, datas)
     else:
         print("本番環境")
-        datas = check_to_exist(url, keywords_file)
-        write_csv(datas, url)
+        urls =  create_url(target_url, keywords_file)
+        datas = check_to_exist(target_url, urls)
+        write_csv(target_url, datas)
+        
+    return 0
+
+
+def main():
+    check_argc()
+    target_url = sys.argv[1]
+    keywords_file = sys.argv[2] 
+
+    work_flow(target_url, keywords_file) 
 
     return 0
 
