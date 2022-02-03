@@ -11,7 +11,7 @@ from debug import debug_csv, coloring
 # define Variable
 args = sys.argv
 time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
-interval = 3 
+interval = 3
 
 
 ## Check Input Arugement
@@ -103,8 +103,12 @@ def write_csv(target_url, datas):
         writer.writerow(header)
         writer.writerow(second_row)
 
-        for data in datas:
-            writer.writerow(data)
+        try:
+            for data in datas:
+                writer.writerow(data)
+            print('Writing Completed => {}'.format(os.path.basename(f_name)))
+        except csv.Error as e:
+            sys.exit('file {}, line {}: {}'.format(filename, reader.line_num,e))
 
     return 0 
 
@@ -131,7 +135,7 @@ def work_flow(target_url, keywords_file):
 def main():
     check_argc()
     target_url = sys.argv[1]
-    keywords_file = sys.argv[2] 
+    keywords_file = sys.argv[2]
 
     work_flow(target_url, keywords_file) 
 
