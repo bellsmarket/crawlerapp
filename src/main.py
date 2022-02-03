@@ -119,7 +119,7 @@ def work_flow(target_url, keywords_file):
     # 0 => デバッグ
     # 1 => 本番環境
     env_flags = 0
-    if env_flags == 0:
+    if env_flags == 1:
         print("デバッグ環境")
         datas = debug_csv(target_url)
         write_csv(target_url, datas)
