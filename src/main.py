@@ -19,12 +19,12 @@ def check_argc():
     if len(sys.argv) <= 1:
         print('引数が足りません。以下のように入力して下さい。')
         print('python3 main.py <TargetURL> <KeywordFile>')
-        exit()
+        sys.exit()
 
     elif len(sys.argv) <= 2: 
         print('URLかファイル指定がありません')
         print('python3 main.py <TargetURL> <KeywordFile>')
-        exit()
+        sys.exit()
     else:
         return 0
 

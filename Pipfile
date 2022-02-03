@@ -6,9 +6,9 @@ name = "pypi"
 [packages]
 requests = "*"
 colorama = "*"
+pyinstaller = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.9"
-
