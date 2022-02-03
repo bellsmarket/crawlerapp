@@ -15,3 +15,9 @@ bell:
 
 main:
 	nvim 		src/main.py
+
+script:
+	dist/crawlerapp
+
+compile:
+	pyinstaller src/main.py --paths=src --onefile --name crawlerapp 
