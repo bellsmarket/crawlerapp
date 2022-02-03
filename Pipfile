@@ -12,6 +12,3 @@ colorama = "*"
 [requires]
 python_version = "3.9"
 
-[scripts]
-100 = "python3 main.py animal100.txt"
-test = "python3 main.py animal.txt"
