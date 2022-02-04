@@ -1,0 +1,65 @@
+[
+	{
+		"id": 1,
+		"name": "aol1",
+		"fileName": "aol_cr_s_",
+		"url": "job.axol.jp/cr/s/",
+		"suffix": "_22/mypage/login"
+	},
+	{
+		"id": 2,
+		"name": "aol2",
+		"fileName": "aol_cr_c_",
+		"url": "job.axol.jp/cr/c/",
+		"suffix": "_22/mypage/login"
+	},
+	{
+		"id": 3,
+		"name": "aol3",
+		"fileName": "aol_pm_s",
+		"url": "job.axol.jp/pm/s/",
+		"suffix": "_23/mypage/login"
+	},
+	{
+		"id": 4,
+		"name": "aol4",
+		"fileName": "aol_pm_c",
+		"url": "job.axol.jp/pm/c/",
+		"suffix": "_23/mypage/login"
+	},
+	{
+		"id": 5,
+		"name": "i-web",
+		"fileName": "i-web_",
+		"url": "mypage.plus.i-web.jpn.com/",
+		"suffix": "2023"
+	},
+	{
+		"id": 6,
+		"name": "e2r",
+		"fileName": "e2r_",
+		"url": "www.e2r.jp/ja/",
+		"suffix": "2023"
+	},
+	{
+		"id": 7,
+		"name": "hrmos",
+		"fileName": "hrmos_",
+		"url": "hrmos.co/pages/",
+		"suffix": ""
+	},
+	{
+		"id": 8,
+		"name": "r-ship",
+		"fileName": "r-ship_",
+		"url": "r-ship2.jp/2023/",
+		"suffix": ""
+	},
+	{
+		"id": 9,
+		"name": "job-sweet",
+		"fileName": "job-sweet_",
+			"url": "js03.jposting.net/",
+		"suffix": "/u/job.phtml"
+	}
+]
