@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+import sys
 
 def t(string):
     print(type(string))
@@ -31,6 +32,15 @@ def debug_csv(url):
             keyword = 'dog'
         else:
             keyword = 'bird'
- 
+
         datas.append(['-', i, keyword, '○'])
     return datas
+
+def arg_alert(argv):
+    if argv <= 3:
+        print('引数が足りません。以下のように入力して下さい。')
+    elif argv > 4:
+        print('引数が多すぎます。以下のように入力して下さい。')
+    print('python3 main.py <TargetCompany> <KeywordFile> <FileID 1〜10>')
+    print('e.x: python3 src/main.py aol1 files/keywordsList.csv 1')
+    sys.exit()

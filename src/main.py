@@ -7,26 +7,30 @@ import datetime
 import time
 import re
 from debug import debug_csv, coloring
+import debug
+import url
 
 # define Variable
 args = sys.argv
-time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
+
+json_path = os.path.dirname(__file__) + '/files/company.json'
+exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
 interval = 3
 
 
 ## Check Input Arugement
 def check_argc():
-    if len(sys.argv) <= 1:
-        print('引数が足りません。以下のように入力して下さい。')
-        print('python3 main.py <TargetURL> <KeywordFile>')
-        sys.exit()
-
-    elif len(sys.argv) <= 2: 
-        print('URLかファイル指定がありません')
-        print('python3 main.py <TargetURL> <KeywordFile>')
-        sys.exit()
+    if len(sys.argv) <= 3:
+        debug.arg_alert(len(sys.argv))
+    elif len(sys.argv) > 4:
+        debug.arg_alert(len(sys.argv))
     else:
-        return 0
+        ## Check Input FileID
+        if int(sys.argv[3]) < 1 or int(sys.argv[3]) > 10:
+            print("<FileID>は1〜10以内で指定して下さい。")
+            exit()
+
+        return True
 
 # Create URL from keywords.
 def create_url(target_url, keywords_file):
@@ -53,7 +57,7 @@ def check_to_exist(target_url, urls):
     datas = []
     cnt_ok = 0
     cnt_ng = 0
-    
+
     for i, url in enumerate(urls):
         r = requests.get(url[0])
         if r.status_code == 200:
@@ -73,7 +77,7 @@ def check_to_exist(target_url, urls):
         # Request Interval
         time.sleep(interval)
 
-    
+
     coloring(200, cnt_ok)
     coloring(404, cnt_ng)
 
@@ -110,7 +114,7 @@ def write_csv(target_url, datas):
         except csv.Error as e:
             sys.exit('file {}, line {}: {}'.format(filename, reader.line_num,e))
 
-    return 0 
+    return 0
 
 # WorkFlow functions.
 def work_flow(target_url, keywords_file):
@@ -126,18 +130,25 @@ def work_flow(target_url, keywords_file):
     else:
         print("本番環境")
         urls =  create_url(target_url, keywords_file)
-        datas = check_to_exist(target_url, urls)
-        write_csv(target_url, datas)
-        
+        # datas = check_to_exist(target_url, urls)
+        # write_csv(target_url, datas)
+
     return 0
 
 
 def main():
     check_argc()
-    target_url = sys.argv[1]
-    keywords_file = sys.argv[2]
 
-    work_flow(target_url, keywords_file) 
+    # Variable
+    target_company = sys.argv[1].lower()
+    keywords_file = sys.argv[2]
+    file_id = sys.argv[3]
+
+    json = url.open_json(json_path)
+    print(url.check_company(json, target_company))
+    sys.exit()
+
+    work_flow(target_company, keywords_file)
 
     return 0
 
