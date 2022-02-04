@@ -6,14 +6,12 @@ from colorama import Fore, Back, Style
 import datetime
 import time
 import re
+import func
 from debug import debug_csv, coloring
 import debug
-import url
 
 # define Variable
 args = sys.argv
-
-json_path = os.path.dirname(__file__) + '/files/company.json'
 exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
 interval = 3
 
@@ -141,11 +139,13 @@ def main():
 
     # Variable
     target_company = sys.argv[1].lower()
-    keywords_file = sys.argv[2]
-    file_id = sys.argv[3]
+    # keywords_file = sys.argv[2]
+    # file_id = sys.argv[3]
+    keywords_file = "test"
+    file_id = 'test'
 
-    json = url.open_json(json_path)
-    print(url.check_company(json, target_company))
+    json = func.open_json()
+    print(func.check_company(json, target_company))
     sys.exit()
 
     work_flow(target_company, keywords_file)
