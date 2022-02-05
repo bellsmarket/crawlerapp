@@ -4,14 +4,11 @@ import requests
 import sys
 import datetime
 import time
-import re
 import func
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 from debug import create_dummydata
 import stdout as out
 from stdout import print_color, add_color, print_error
-import debug
-# func.print_company_info()
 
 # define Variable
 ###########################
@@ -70,9 +67,11 @@ def create_url(company_info, keywords_file, file_id):
         print_error('キーワードファイルにディレクトリが選択されています。')
         print('正しいファイルパスを指定して下さい。')
         print('python3 main.py <TargetURL> <KeywordFile>')
+        print(e)
         sys.exit(1)
     except OSError as e:
         print_error('ファイルが存在しません')
+        print(e)
         sys.exit(1)
 
     # print(len(urls))
@@ -91,11 +90,9 @@ def check_statuscode(company_info, urls, file_id):
         if r.status_code == 200:
             flag = Fore.GREEN + str(r.status_code) + Style.RESET_ALL
             cnt_ok += 1
-            status = '○'
         else:
             flag = Fore.RED + str(r.status_code) + Style.RESET_ALL
             cnt_ng += 1
-            status = '×'
 
         keyword = url[1]
         fqdn = company_info.create_fqdn(keyword)
@@ -136,7 +133,7 @@ def write_csv(company_info, datas, file_id):
                 writer.writerow(data)
             print('{} => {}'.format(add_color('Writing Completed', GREEN), os.path.basename(export_csv_name)))
         except csv.Error as e:
-            sys.exit('file {}, line {}: {}'.format(filename, reader.line_num, e))
+            sys.exit('file {}, line :{}'.format(export_csv_name, e))
 
     return True
 

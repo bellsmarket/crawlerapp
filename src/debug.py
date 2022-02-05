@@ -1,11 +1,5 @@
-from colorama import Fore, Back, Style
 import sys
 import datetime
-import func
-import socks
-import socket
-import time
-from stdout import print_color, add_color, print_error
 
 args = sys.argv
 
@@ -26,7 +20,6 @@ def check_fileid(args):
 
 # for debug.
 def create_dummydata(company_info, file_id):
-    interval = 3
     datas = []
     num_request = 3500
     target_from = num_request * int(args[3]) - num_request
@@ -46,7 +39,7 @@ def create_dummydata(company_info, file_id):
 
         fqdn = company_info.create_fqdn(keyword) if not keyword == '' else keyword
         keyword = keyword = 'lion' if keyword == '' else keyword
-        datas.append([keyword,  fqdn, datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')])
+        datas.append([keyword, fqdn, datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')])
 
     return datas
 

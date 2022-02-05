@@ -81,7 +81,7 @@ class cast_obj_from_json:
         self.fqdn = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
         return self.fqdn
 
-    def print_fqdn(self, ):
+    def print_fqdn(self, keyword):
         self.keyword = keyword
         self.fqdn = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
         print(self.fqdn)
