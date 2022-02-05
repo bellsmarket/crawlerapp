@@ -2,14 +2,16 @@ import os
 import csv
 import requests
 import sys
-from colorama import Fore, Back, Style
 import datetime
 import time
 import re
 import func
-from debug import create_dummydata, coloring
+from colorama import Fore, Back, Style
+from debug import create_dummydata
+import stdout as out
+from stdout import print_color, add_color, print_error
 import debug
-
+# func.print_company_info()
 
 # define Variable
 ###########################
@@ -19,45 +21,59 @@ import debug
 #   args[3] => FileID
 ###########################
 
+BLACK = 'black'
+RED = 'red'
+GREEN = 'green'
+YELLOW = 'yellow'
+BLUE = 'blue'
+MAGENTA = 'magenta'
+CYAN = 'cyan'
+WHITE = 'white'
+
 args = sys.argv
 exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
 interval = 3
-num_request = 5
+num_request = 3
 
-## Check Input Arugement
+# 環境切り替え
+# 0 => デバッグ
+# 1 => 本番環境
+env_flags = 1
+
+
+# Check Input Arugement
 def check_argc():
     if len(sys.argv) <= 3:
-        debug.arg_alert(len(sys.argv))
+        out.arg_alert(len(sys.argv))
     elif len(sys.argv) > 4:
-        debug.arg_alert(len(sys.argv))
+        out.arg_alert(len(sys.argv))
     else:
-        ## Check Input FileID
+        # Check Input FileID
         if int(sys.argv[3]) < 1 or int(sys.argv[3]) > 10:
-            print("<FileID>は1〜10以内で指定して下さい。")
-            sys.exit()
+            print_error('<FileID>は1〜10以内で指定して下さい。')
+            sys.exit(1)
 
         return True
 
+
 # Create URL from keywords.
 def create_url(company_info, keywords_file, file_id):
-
-    # Variable
     urls = []
-    target_range = func.calc_from_to(args, num_request)
-
-    # debug.check_fileid(args)
+    target_range = func.get_from_to(args, num_request)
 
     try:
         with open(keywords_file, 'r') as f:
-            # for keyword in f.read()[target_range[0]: target_range[1]].splitlines():
             for keyword in f.readlines()[target_range[0]: target_range[1]]:
-                # print(keyword.rstrip('\n'))
                 urls.append(['{0}{1}{2}{3}'.format(company_info.prefix, company_info.url, keyword.rstrip('\n'), company_info.suffix), keyword.rstrip('\n')])
 
     except IsADirectoryError as e:
-        print('キーワードファイルにディレクトリが選択されています。')
+        print_error('キーワードファイルにディレクトリが選択されています。')
         print('正しいファイルパスを指定して下さい。')
         print('python3 main.py <TargetURL> <KeywordFile>')
+        sys.exit(1)
+    except OSError as e:
+        print_error('ファイルが存在しません')
+        sys.exit(1)
 
     # print(len(urls))
     # print(urls)
@@ -65,9 +81,7 @@ def create_url(company_info, keywords_file, file_id):
 
 
 # Check the existence.
-def check_to_exist(company_info, urls):
-
-    # Variable
+def check_statuscode(company_info, urls, file_id):
     datas = []
     cnt_ok = 0
     cnt_ng = 0
@@ -83,38 +97,36 @@ def check_to_exist(company_info, urls):
             cnt_ng += 1
             status = '×'
 
-        print('{0: d}: {1} => {2}'.format(i, url[1], flag))
+        keyword = url[1]
+        fqdn = company_info.create_fqdn(keyword)
+        time_stamp = datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')
+
+        print('{0: d}: {1} => {2}'.format(i, keyword, flag))
 
         # Create Datas for WriteCSV.
-
-        datas.append([url[1],  company_info.create_full_url(url[1]), datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')])
-        # datas.append(['-', i+1 , url[1], status])
+        datas.append([keyword, fqdn, time_stamp])
 
         # Request Interval
         time.sleep(interval)
 
-
-    coloring(200, cnt_ok)
-    coloring(404, cnt_ng)
+    out.print_status_code(cnt_ok, cnt_ng)
 
     return datas
 
 
 # Write data to CSV file.
-def write_csv(company_info, datas, json, file_id):
-
-    # Variable
-    CSV_DIR = os.path.dirname(__file__) +'/csv'
+def write_csv(company_info, datas, file_id):
+    CSV_PATH = os.path.dirname(__file__) + '/csv'
 
     # Check the Export Directory.
-    if not os.path.isdir(CSV_DIR):
-        os.makedirs(CSV_DIR)
-        print('Create Directory => ' + CSV_DIR)
+    if not os.path.isdir(CSV_PATH):
+        os.makedirs(CSV_PATH)
+        print('Create Directory => ' + CSV_PATH)
 
     header = ['企業名', 'URL', '調査日時']
-    f_name = CSV_DIR + '/' + company_info.filename + f'{file_id:02}' + '.csv'
+    export_csv_name = CSV_PATH + '/' + company_info.filename + f'{file_id:02}' + '.csv'
 
-    with open(f_name, 'a')as f:
+    with open(export_csv_name, 'a')as f:
         writer = csv.writer(f)
         if file_id == 1:
             writer.writerow(header)
@@ -122,38 +134,30 @@ def write_csv(company_info, datas, json, file_id):
         try:
             for data in datas:
                 writer.writerow(data)
-            print('Writing Completed => {}'.format(os.path.basename(f_name)))
+            print('{} => {}'.format(add_color('Writing Completed', GREEN), os.path.basename(export_csv_name)))
         except csv.Error as e:
-            sys.exit('file {}, line {}: {}'.format(filename, reader.line_num,e))
+            sys.exit('file {}, line {}: {}'.format(filename, reader.line_num, e))
 
     return True
 
+
 # WorkFlow functions.
 def work_flow(target_company, keywords_file, file_id):
-
-    target_range = func.calc_from_to(args, num_request)
-
     # Check CompanyName to JsonFile
     json = func.check_company(target_company)
-    company_info = func.cast(json)
-    company_info.print_full_url('xxxxxxxxxx')
+    company_info = func.cast_obj_from_json(json)
 
-    # 環境切り替え
-    # 0 => デバッグ
-    # 1 => 本番環境
-    env_flags = 0
     if env_flags == 0:
-        print("デバッグ環境")
+        print_color("ENV => Debug", RED)
         datas = create_dummydata(company_info, file_id)
-        write_csv(company_info, datas, json, file_id)
+        write_csv(company_info, datas, file_id)
     else:
-        print("本番環境")
-        urls =  create_url(company_info, keywords_file, file_id)
-        datas = check_to_exist(company_info, urls)
-        write_csv(company_info, datas, json, file_id)
+        print_color("ENV => Prod", GREEN)
+        urls = create_url(company_info, keywords_file, file_id)
+        datas = check_statuscode(company_info, urls, file_id)
+        write_csv(company_info, datas, file_id)
 
     return 0
-
 
 
 def main():

@@ -1,43 +1,54 @@
 import json
 import sys
 import os
+import stdout as out
+
+BLACK = 'black'
+RED = 'red'
+GREEN = 'green'
+YELLOW = 'yellow'
+BLUE = 'blue'
+MAGENTA = 'magenta'
+CYAN = 'cyan'
+WHITE = 'white'
+
 
 # Open the JsonFile of Company Info.
 def open_json():
-
-    # Variable
-    json_path = os.path.dirname(__file__) + '/files/companies_info.json'
-
-    json_open = open(json_path, 'r')
-    companies = json.load(json_open)
+    JSON_PATH = os.path.dirname(__file__) + '/files/companies_info.json'
+    json_obj = open(JSON_PATH, 'r')
+    companies = json.load(json_obj)
 
     return companies
+
+
+def print_company_info():
+    jsonfile = open_json()
+    for com in jsonfile:
+        print(com['name'])
+    exit()
 
 
 # Check the CompanyName from Jsonfile.
 def check_company(company_name):
     jsonfile = open_json()
 
-    check_flag = False
+    company_flag = False
     for company in jsonfile:
         if company['name'] == company_name:
-            check_flag = True
+            company_flag = True
             break
 
-    if not check_flag:
-        print("企業名が引数にありません。")
-        exit()
+    if not company_flag:
+        print('{} => 指定された引数と企業名が一致しません。'.format(out.add_color("Error", RED)))
+        print('以下の値から選択し、引数に入力してください。')
+        print_company_info()
+        sys.exit(1)
 
     return company
 
 
-def parse_url(obj):
-    prefix = 'https://'
-    url = prefix + str(obj['url']) + 'KEYWORD' + str(obj['suffix'])
-    return url
-
-
-def calc_from_to(args, num):
+def get_from_to(args, num):
     num_request = num
     target_from = num_request * int(args[3]) - num_request
     target_to = num_request * int(args[3])
@@ -45,18 +56,17 @@ def calc_from_to(args, num):
     return target_from, target_to
 
 
-class cast:
+class cast_obj_from_json:
     def __init__(self, json):
         self.list = json
         self.prefix = 'https://'
-        self.id =       json['id']
-        self.name =     json['name']
+        self.id = json['id']
+        self.name = json['name']
         self.filename = json['filename']
-        self.url =       json['url']
+        self.url = json['url']
         self.suffix = json['suffix']
 
     def profile(self):
-        # print(self.list)
         print('self.prefix => ' + str(self.prefix))
         print('self.id => ' + str(self.id))
         print('self.name => ' + str(self.name))
@@ -64,16 +74,16 @@ class cast:
         print('self.url => ' + str(self.url))
         print('self.suffix => ' + str(self.suffix))
         print('')
-        exit()
+        exit(1)
 
-    def create_full_url(self, keyword):
+    def create_fqdn(self, keyword):
         self.keyword = keyword
-        self.full_url = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
-        return self.full_url
+        self.fqdn = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
+        return self.fqdn
 
-    def print_full_url(self, keyword):
+    def print_fqdn(self, ):
         self.keyword = keyword
-        self.full_url = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
-        print(self.full_url)
+        self.fqdn = '{0}{1}{2}{3}'.format(self.prefix, self.url, self.keyword, self.suffix)
+        print(self.fqdn)
         print('')
-        exit()
+        exit(1)
