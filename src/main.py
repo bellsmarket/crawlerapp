@@ -1,14 +1,15 @@
 import os
 import csv
-import requests
 import sys
 import datetime
 import time
+import requests
+from stdout import print_color, add_color, print_error
 import func
 from colorama import Fore, Style
 from debug import create_dummydata
+import debug
 import stdout as out
-from stdout import print_color, add_color, print_error
 
 # define Variable
 ###########################
@@ -30,7 +31,7 @@ WHITE = 'white'
 args = sys.argv
 exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
 interval = 3
-num_request = 3
+num_request = 10
 
 # 環境切り替え
 # 0 => デバッグ
@@ -57,11 +58,13 @@ def check_argc():
 def create_url(company_info, keywords_file, file_id):
     urls = []
     target_range = func.get_from_to(args, num_request)
+    # DATA_PATH = os.path.dirname(__file__) + '/files/data.csv'
 
     try:
         with open(keywords_file, 'r') as f:
             for keyword in f.readlines()[target_range[0]: target_range[1]]:
-                urls.append(['{0}{1}{2}{3}'.format(company_info.prefix, company_info.url, keyword.rstrip('\n'), company_info.suffix), keyword.rstrip('\n')])
+                tmp = keyword.split(',')
+                urls.append(['{0}{1}{2}{3}'.format(company_info.prefix, company_info.url, tmp[1].rstrip('\n'), company_info.suffix), tmp[0]])
 
     except IsADirectoryError as e:
         print_error('キーワードファイルにディレクトリが選択されています。')
@@ -74,7 +77,6 @@ def create_url(company_info, keywords_file, file_id):
         print(e)
         sys.exit(1)
 
-    # print(len(urls))
     # print(urls)
     return urls
 
@@ -151,13 +153,19 @@ def work_flow(target_company, keywords_file, file_id):
     else:
         print_color("ENV => Prod", GREEN)
         urls = create_url(company_info, keywords_file, file_id)
-        datas = check_statuscode(company_info, urls, file_id)
-        write_csv(company_info, datas, file_id)
+        print(urls)
+        print(len(urls))
+        # datas = check_statuscode(company_info, urls, file_id)
+        # write_csv(company_info, datas, file_id)
 
     return 0
 
 
 def main():
+    import logging
+
+    logging.error('errorメッセージ')
+
     # debug.all(args)
     check_argc()
 
