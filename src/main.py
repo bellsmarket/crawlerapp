@@ -8,7 +8,7 @@ from stdout import print_color, add_color, print_error
 import func
 from colorama import Fore, Style
 from debug import create_dummydata
-import debug
+# import debug
 import stdout as out
 
 # define Variable
@@ -30,8 +30,8 @@ WHITE = 'white'
 
 args = sys.argv
 exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
-interval = 3
-num_request = 10
+interval = 3 
+num_request = 10 
 
 # 環境切り替え
 # 0 => デバッグ
@@ -61,7 +61,7 @@ def create_url(company_info, keywords_file, file_id):
     # DATA_PATH = os.path.dirname(__file__) + '/files/data.csv'
 
     try:
-        with open(keywords_file, 'r') as f:
+        with open(keywords_file, 'r', encoding="utf-8-sig") as f:
             for keyword in f.readlines()[target_range[0]: target_range[1]]:
                 tmp = keyword.split(',')
                 urls.append(['{0}{1}{2}{3}'.format(company_info.prefix, company_info.url, tmp[1].rstrip('\n'), company_info.suffix), tmp[0]])
@@ -77,7 +77,6 @@ def create_url(company_info, keywords_file, file_id):
         print(e)
         sys.exit(1)
 
-    # print(urls)
     return urls
 
 
@@ -86,6 +85,8 @@ def check_statuscode(company_info, urls, file_id):
     datas = []
     cnt_ok = 0
     cnt_ng = 0
+    # fqdn = url[0]
+    # 企業名 = url[1]
 
     for i, url in enumerate(urls):
         r = requests.get(url[0])
@@ -100,10 +101,14 @@ def check_statuscode(company_info, urls, file_id):
         fqdn = company_info.create_fqdn(keyword)
         time_stamp = datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
-        print('{0: d}: {1} => {2}'.format(i, keyword, flag))
+        # print('{0: d}: {1} => {2}'.format(i, keyword, flag))
+        print('{0: d}: {1} => {2}'.format(i + 1, url[0], flag))
 
         # Create Datas for WriteCSV.
-        datas.append([keyword, fqdn, time_stamp])
+        if r.status_code == 200:
+            datas.append([i + 1, keyword, url[0], time_stamp])
+        else: 
+            datas.append([i + 1, keyword, '-', time_stamp])
 
         # Request Interval
         time.sleep(interval)
@@ -122,7 +127,7 @@ def write_csv(company_info, datas, file_id):
         os.makedirs(CSV_PATH)
         print('Create Directory => ' + CSV_PATH)
 
-    header = ['企業名', 'URL', '調査日時']
+    header = ['id', '企業名', 'URL', '調査日時']
     export_csv_name = CSV_PATH + '/' + company_info.filename + f'{file_id:02}' + '.csv'
 
     with open(export_csv_name, 'a')as f:
@@ -153,19 +158,13 @@ def work_flow(target_company, keywords_file, file_id):
     else:
         print_color("ENV => Prod", GREEN)
         urls = create_url(company_info, keywords_file, file_id)
-        print(urls)
-        print(len(urls))
-        # datas = check_statuscode(company_info, urls, file_id)
-        # write_csv(company_info, datas, file_id)
+        datas = check_statuscode(company_info, urls, file_id)
+        write_csv(company_info, datas, file_id)
 
     return 0
 
 
 def main():
-    import logging
-
-    logging.error('errorメッセージ')
-
     # debug.all(args)
     check_argc()
 

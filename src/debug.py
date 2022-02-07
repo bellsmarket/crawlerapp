@@ -21,7 +21,7 @@ def check_fileid(args):
 # for debug.
 def create_dummydata(company_info, file_id):
     datas = []
-    num_request = 3500
+    num_request = 3
     target_from = num_request * int(args[3]) - num_request
     target_to = num_request * int(args[3])
 
@@ -30,16 +30,20 @@ def create_dummydata(company_info, file_id):
     for i in range(target_from, target_to):
         if i % 4 == 0:
             keyword = 'cat'
+            name = "猫"
         elif i % 4 == 1:
             keyword = 'dog'
+            name = "犬"
         elif i % 4 == 2:
             keyword = 'bird'
+            name = "鳥"
         else:
             keyword = ''
+            name = "ライオン"
 
         fqdn = company_info.create_fqdn(keyword) if not keyword == '' else keyword
         keyword = keyword = 'lion' if keyword == '' else keyword
-        datas.append([keyword, fqdn, datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')])
+        datas.append([i, name, fqdn, datetime.datetime.now().strftime('%y/%m/%d %H:%M:%S')])
 
     return datas
 
