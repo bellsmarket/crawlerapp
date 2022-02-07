@@ -61,5 +61,12 @@
 		"filename": "job-sweet_",
     "url": "js03.jposting.net/",
 		"suffix": "/u/job.phtml"
+	},
+	{
+		"id": 10,
+		"name": "bell",
+		"filename": "bells-audio_",
+    "url": "bells-audio.com",
+		"suffix": ""
 	}
 ]
