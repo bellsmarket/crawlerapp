@@ -31,7 +31,7 @@ WHITE = 'white'
 args = sys.argv
 exe_time_stamp = datetime.datetime.now().strftime('%y%m%d%H%M')
 interval = 3 
-num_request = 10 
+num_request = 3600 
 
 # 環境切り替え
 # 0 => デバッグ
@@ -85,10 +85,13 @@ def check_statuscode(company_info, urls, file_id):
     datas = []
     cnt_ok = 0
     cnt_ng = 0
+
     # fqdn = url[0]
     # 企業名 = url[1]
 
     for i, url in enumerate(urls):
+        number = (file_id - 1) * num_request + (i + 1)
+
         r = requests.get(url[0])
         if r.status_code == 200:
             flag = Fore.GREEN + str(r.status_code) + Style.RESET_ALL
@@ -106,9 +109,9 @@ def check_statuscode(company_info, urls, file_id):
 
         # Create Datas for WriteCSV.
         if r.status_code == 200:
-            datas.append([i + 1, keyword, url[0], time_stamp])
-        else: 
-            datas.append([i + 1, keyword, '-', time_stamp])
+            datas.append([number, keyword, url[0], time_stamp])
+        else:
+            datas.append([number, keyword, '-', time_stamp])
 
         # Request Interval
         time.sleep(interval)
